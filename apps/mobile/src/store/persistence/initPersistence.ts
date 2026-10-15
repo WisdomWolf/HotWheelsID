@@ -287,6 +287,10 @@ async function initializeRepositories(
         .catch((error) => console.warn("[garage] speed failed", error)),
     onRename: (uid, name) =>
       void repos.car.setName(uid, name).catch((error) => console.warn("[garage] rename failed", error)),
+    onResetBest: (uid) =>
+      void repos.car
+        .resetBest(uid)
+        .catch((error) => console.warn("[garage] reset best failed", error)),
     onClear: () =>
       void repos.car.clear().catch((error) => console.warn("[garage] clear failed", error)),
   });

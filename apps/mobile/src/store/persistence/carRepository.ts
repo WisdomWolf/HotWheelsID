@@ -56,6 +56,8 @@ export interface CarRepository {
   recordSpeed(input: SpeedInput): Promise<void>;
   /** Set or clear the user-assigned nickname. */
   setName(uid: string, name: string | null): Promise<void>;
+  /** Zero a car's saved best speed (race-derived stats are untouched). */
+  resetBest(uid: string): Promise<void>;
   /** Forget the whole garage. */
   clear(): Promise<void>;
 }
@@ -116,6 +118,10 @@ export function applyName(cars: readonly CarRecord[], uid: string, name: string 
   return cars.map((c) => (c.uid === uid ? { ...c, name } : { ...c }));
 }
 
+export function applyResetBest(cars: readonly CarRecord[], uid: string): CarRecord[] {
+  return cars.map((c) => (c.uid === uid ? { ...c, bestMph: 0 } : { ...c }));
+}
+
 /** Most-recently-seen first; a stable, sensible default for the Garage list. */
 export function sortCars(cars: readonly CarRecord[]): CarRecord[] {
   return [...cars].sort((a, b) => b.lastSeen - a.lastSeen);
@@ -149,6 +155,10 @@ export class InMemoryCarRepository implements CarRepository {
 
   async setName(uid: string, name: string | null): Promise<void> {
     this.cars = applyName(this.cars, uid, name);
+  }
+
+  async resetBest(uid: string): Promise<void> {
+    this.cars = applyResetBest(this.cars, uid);
   }
 
   async clear(): Promise<void> {

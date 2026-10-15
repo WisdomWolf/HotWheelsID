@@ -102,6 +102,10 @@ export class SqliteCarRepository implements CarRepository {
     await this.db.runAsync(`UPDATE cars SET name = ? WHERE uid = ?`, name, uid);
   }
 
+  async resetBest(uid: string): Promise<void> {
+    await this.db.runAsync(`UPDATE cars SET best_mph = 0 WHERE uid = ?`, uid);
+  }
+
   async clear(): Promise<void> {
     await this.db.execAsync("DELETE FROM cars;");
   }

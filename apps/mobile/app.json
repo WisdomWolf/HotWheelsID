@@ -2,7 +2,6 @@
   "expo": {
     "name": "Redline ID",
     "slug": "redline-id",
-    "owner": "hyperion-studio",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
@@ -10,7 +9,7 @@
     "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.burkben.redlineid",
+      "bundleIdentifier": "org.developingwisdom.redlineid",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSBluetoothAlwaysUsageDescription": "Redline ID uses Bluetooth to connect to your race portal and read car and speed data.",
@@ -74,12 +73,16 @@
           "enableBackgroundPlayback": false
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-status-bar",
+      "./plugins/withSceneLifecycle",
+      "expo-web-browser"
     ],
     "extra": {
       "eas": {
-        "projectId": "1cd8338b-4ead-4ad0-b90f-32d0ff324f7a"
+        "projectId": "963ef0ef-c64d-40bf-960b-f6e006c70b52"
       }
-    }
+    },
+    "owner": "wisdomwolf"
   }
 }
