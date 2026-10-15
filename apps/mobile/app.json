@@ -10,7 +10,7 @@
     "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.burkben.redlineid",
+      "bundleIdentifier": "org.developingwisdom.redlineid",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSBluetoothAlwaysUsageDescription": "Redline ID uses Bluetooth to connect to your race portal and read car and speed data.",
