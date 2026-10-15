@@ -2,7 +2,6 @@
   "expo": {
     "name": "Redline ID",
     "slug": "redline-id",
-    "owner": "hyperion-studio",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
@@ -78,11 +77,6 @@
       "expo-status-bar",
       "./plugins/withSceneLifecycle",
       "expo-web-browser"
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "1cd8338b-4ead-4ad0-b90f-32d0ff324f7a"
-      }
-    }
+    ]
   }
 }
