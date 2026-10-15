@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   applyDetection,
+  applyResetBest,
   applySpeed,
   InMemoryCarRepository,
   sortCars,
@@ -60,6 +61,22 @@ describe("InMemoryCarRepository", () => {
     expect((await repo.getCars()).map((c) => c.uid)).toEqual(["NEW", "OLD"]);
   });
 
+  it("resetBest() zeroes one car's best speed and keeps the rest of its record", async () => {
+    const repo = new InMemoryCarRepository();
+    await repo.recordDetection({ uid: "AA", serial: "S1", at: 1 });
+    await repo.recordSpeed({ uid: "AA", mph: 9, at: 2 });
+    await repo.recordSpeed({ uid: "BB", mph: 7, at: 3 });
+    await repo.setName("AA", "Rocket");
+    await repo.resetBest("AA");
+    const cars = await repo.getCars();
+    const aa = cars.find((c) => c.uid === "AA")!;
+    expect(aa).toMatchObject({ bestMph: 0, name: "Rocket", serial: "S1", detections: 1 });
+    expect(cars.find((c) => c.uid === "BB")!.bestMph).toBe(7);
+    // A later, slower pass sets a fresh best.
+    await repo.recordSpeed({ uid: "AA", mph: 3, at: 4 });
+    expect((await repo.getCars()).find((c) => c.uid === "AA")!.bestMph).toBe(3);
+  });
+
   it("clear() forgets the whole garage", async () => {
     const repo = new InMemoryCarRepository();
     await repo.recordDetection({ uid: "AA", at: 1 });
@@ -77,6 +94,14 @@ describe("InMemoryCarRepository", () => {
 });
 
 describe("pure car reducers", () => {
+  it("applyResetBest only touches the matching car and does not mutate the input", () => {
+    const cars = applySpeed(applySpeed([], { uid: "AA", mph: 5, at: 1 }), { uid: "BB", mph: 6, at: 2 });
+    const next = applyResetBest(cars, "AA");
+    expect(next.find((c) => c.uid === "AA")!.bestMph).toBe(0);
+    expect(next.find((c) => c.uid === "BB")!.bestMph).toBe(6);
+    expect(cars.find((c) => c.uid === "AA")!.bestMph).toBe(5);
+  });
+
   it("applyDetection does not mutate the input array", () => {
     const before: CarRecord[] = [];
     const after = applyDetection(before, { uid: "AA", at: 1 });

@@ -15,6 +15,7 @@ import { create } from "zustand";
 import {
   applyDetection,
   applyName,
+  applyResetBest,
   applySerial,
   applySpeed,
   sortCars,
@@ -33,6 +34,7 @@ export interface GaragePersistence {
   onSerial?: (uid: string, serial: string) => void;
   onSpeed?: (input: SpeedInput) => void;
   onRename?: (uid: string, name: string | null) => void;
+  onResetBest?: (uid: string) => void;
   onClear?: () => void;
 }
 
@@ -56,6 +58,8 @@ export interface GarageStore {
   recordSpeed: (input: SpeedInput) => void;
   /** Set or clear a car's nickname. */
   rename: (uid: string, name: string | null) => void;
+  /** Zero one car's best speed, leaving the rest of its record intact. */
+  resetBest: (uid: string) => void;
   /** Forget the whole garage. */
   forgetAll: () => void;
 }
@@ -83,6 +87,11 @@ export const useGarageStore = create<GarageStore>((set) => ({
   rename: (uid, name) => {
     set((s) => ({ cars: sortCars(applyName(s.cars, uid, name)) }));
     persistence.onRename?.(uid, name);
+  },
+
+  resetBest: (uid) => {
+    set((s) => ({ cars: sortCars(applyResetBest(s.cars, uid)) }));
+    persistence.onResetBest?.(uid);
   },
 
   forgetAll: () => {

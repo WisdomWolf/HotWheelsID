@@ -76,11 +76,28 @@ describe("garageStore", () => {
     expect(onClear).toHaveBeenCalledOnce();
   });
 
+  it("resets one car's best speed and fires the onResetBest sink", () => {
+    const onResetBest = vi.fn();
+    setGaragePersistence({ onResetBest });
+    useGarageStore.getState().hydrate([
+      car({ uid: "AA", bestMph: 9 }),
+      car({ uid: "BB", bestMph: 4 }),
+    ]);
+
+    useGarageStore.getState().resetBest("AA");
+
+    const cars = useGarageStore.getState().cars;
+    expect(cars.find((c) => c.uid === "AA")!.bestMph).toBe(0);
+    expect(cars.find((c) => c.uid === "BB")!.bestMph).toBe(4);
+    expect(onResetBest).toHaveBeenCalledWith("AA");
+  });
+
   it("never throws when persistence sinks are unset (CI path)", () => {
     expect(() => {
       useGarageStore.getState().recordDetection({ uid: "AA", at: 1 });
       useGarageStore.getState().recordSpeed({ uid: "AA", mph: 3, at: 2 });
       useGarageStore.getState().rename("AA", "X");
+      useGarageStore.getState().resetBest("AA");
       useGarageStore.getState().forgetAll();
     }).not.toThrow();
   });

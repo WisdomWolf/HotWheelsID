@@ -5,7 +5,7 @@
  * Redline layout: SPEC §4.8 / `png/CarDetail.png`.
  */
 import { useMemo, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import Svg, { Circle, Path } from 'react-native-svg';
@@ -43,6 +43,7 @@ export default function CarDetailScreen() {
   const cars = useGarageStore((s) => s.cars);
   const car = cars.find((c) => c.uid === uid);
   const rename = useGarageStore((s) => s.rename);
+  const resetBest = useGarageStore((s) => s.resetBest);
   const onPortal = usePortalStore((s) => s.car?.uid === uid);
   const identity = useCarIdentity(uid);
   const identities = useGarageIdentities(cars);
@@ -68,6 +69,16 @@ export default function CarDetailScreen() {
     if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
   };
   const dirty = draft.trim() !== (car?.name ?? '');
+  const confirmResetBest = () => {
+    Alert.alert(
+      'Reset best speed?',
+      'Clears this car’s saved best speed. Its scans, races, best lap and identity are kept.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Reset', style: 'destructive', onPress: () => resetBest(uid) },
+      ],
+    );
+  };
   const goBack = () => (router.canGoBack() ? router.back() : router.navigate('/garage'));
 
   const rank = car ? garageRank(cars, car.uid) : null;
@@ -187,6 +198,10 @@ export default function CarDetailScreen() {
               </SkewBox>
             )}
           </View>
+
+          {car.bestMph > 0 && (
+            <RaceButton label="Reset best speed" variant="ghost" compact onPress={confirmResetBest} accessibilityHint="Clears this car's saved best speed only." />
+          )}
 
           <View style={styles.stats}>
             <Stat label="BEST LAP" value={bestLap} spoken={bestLap === '—' ? 'none' : `${bestLap} seconds`} color={colorsR.electric} />

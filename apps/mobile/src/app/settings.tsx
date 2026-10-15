@@ -34,6 +34,7 @@ import { buildIdentityExport, exportIdentifications } from '@/catalog/identityEx
 import { useLayout } from '@/layout/useLayout';
 import { LAP_OPTIONS } from '@/race/raceEngine';
 import { DEFAULT_SETTINGS, useSettingsStore } from '@/store/settingsStore';
+import { useGarageStore } from '@/store/garageStore';
 import { useIdentityStore } from '@/store/identityStore';
 import { usePortalStore } from '@/store/portalStore';
 import { usePortalController, usePortalControllerActions } from '@/portal/PortalControllerProvider';
@@ -85,6 +86,9 @@ export default function SettingsScreen() {
   const setSpeedUnit = useSettingsStore((s) => s.setSpeedUnit);
   const setSpeedCalibration = useSettingsStore((s) => s.setSpeedCalibration);
   const reset = useSettingsStore((s) => s.reset);
+  const garageCount = useGarageStore((s) => s.cars.length);
+  const forgetGarage = useGarageStore((s) => s.forgetAll);
+  const resetIdentities = useIdentityStore((s) => s.reset);
 
   const connection = usePortalStore((s) => s.connection);
   const controlStatus = usePortalStore((s) => s.controlStatus);
@@ -170,6 +174,24 @@ export default function SettingsScreen() {
         },
       },
     ]);
+  };
+
+  const confirmResetGarage = () => {
+    Alert.alert(
+      'Reset garage?',
+      'Forget every collected car, including best speeds and car identifications. Race results and history are kept.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset garage',
+          style: 'destructive',
+          onPress: () => {
+            forgetGarage();
+            resetIdentities();
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -366,6 +388,17 @@ export default function SettingsScreen() {
 
         <SettingsSection title="System" index={7}>
           <SettingGroup>
+            <SettingRow
+              label="Reset garage"
+              destructive
+              onPress={confirmResetGarage}
+              accessibilityLabel="Reset garage"
+              accessibilityHint={
+                garageCount === 0
+                  ? 'The garage is already empty.'
+                  : `Forgets all ${garageCount} collected cars, their best speeds and identifications.`
+              }
+            />
             <SettingRow
               label="Reset to defaults"
               destructive
