@@ -77,6 +77,12 @@
       "expo-status-bar",
       "./plugins/withSceneLifecycle",
       "expo-web-browser"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "963ef0ef-c64d-40bf-960b-f6e006c70b52"
+      }
+    },
+    "owner": "wisdomwolf"
   }
 }
